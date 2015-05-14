@@ -21,7 +21,7 @@ Whenever Generate.py is ran, it will write to the specified file something that 
 It will write out a start character and an end character, that way you can quickly check to make sure a user didn't gain access to the file while it was being written to somehow.  Its written as:
 \002Your Something\003
 
-where \002 and \003 are single characters: the start of text character, and \003 is the end of text character.
+where \002 and \003 are single characters: \002 is the start of text character, and \003 is the end of text character.
 
 Configuring
 ====
