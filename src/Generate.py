@@ -39,6 +39,11 @@ class Generator():
 
         return item
 
+    def writeItem(self, item):
+        file = open(self.outFile, 'w')
+        file.write(item)
+        file.close()
+
     def __exit__(self, type, value, traceback):
         if ( self.curser != None ):
             self.curser.close()
@@ -53,5 +58,5 @@ if __name__ == "__main__":
 
     with Generator(args.outfile, SETTINGS) as generator:
         item = generator.GetRandomItem()
-        print (item)
+        generator.writeItem(item)
 
