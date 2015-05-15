@@ -1,8 +1,8 @@
 '''
- Copyright Seth Hendrick 2015.
- Distributed under the Boost Software License, Version 1.0.
- (See accompanying file ../LICENSE_1_0.txt or copy at
- http://www.boost.org/LICENSE_1_0.txt)
+Copyright Seth Hendrick 2015.
+Distributed under the Boost Software License, Version 1.0.
+(See accompanying file ../LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt)
 '''
 import argparse
 from mysql.connector import (connection)
@@ -26,25 +26,32 @@ class Generator():
         return self
 
     def GetRandomItem(self):
-        query = "SELECT * FROM %s" + \
+        item = ""
+
+        query = "SELECT * FROM " + self.settings['DB_TABLE'] + \
             " WHERE shown=0 ORDER BY RAND() LIMIT 1"
-        
-        cursor = self.database.cursor()
-        cursor.execute(query, (self.settings['DB_TABLE']))
-        print (cursor)
+
+        cursor = self.db.cursor()
+        cursor.execute(query)
+        for (id, content, shown) in cursor:
+            item = content.replace("\\n", "\n")
+            item = '\002' + item + '\003'
+
+        return item
 
     def __exit__(self, type, value, traceback):
         if ( self.curser != None ):
-            curser.close()
-        
+            self.curser.close()
+
         if ( self.db != None ):
-            db.close()
-        
+            self.db.close()
 
 if __name__ == "__main__":
     argParser = argparse.ArgumentParser( description="Reads a random something from the database and writes it to the given file." )
     argParser.add_argument("outfile", action = "store", default="index.txt", help="The file to export to.")
     args = argParser.parse_args()
-    
+
     with Generator(args.outfile, SETTINGS) as generator:
-        generator.GetRandomItem()
+        item = generator.GetRandomItem()
+        print (item)
+
