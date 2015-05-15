@@ -4,3 +4,26 @@
  (See accompanying file ../LICENSE_1_0.txt or copy at
  http://www.boost.org/LICENSE_1_0.txt)
 '''
+
+SETTINGS = {}
+
+# Database User Name
+# Should have the update, select, delete, and add permissions
+SETTINGS['DB_USERNAME'] = "yourUserName"
+
+# Database Password
+SETTINGS['DB_PASSWORD'] = "yourSuperSecretPassword"
+
+# URL To the database
+SETTINGS['DB_URL'] = "Your URL"
+
+# The database name
+SETTINGS['DB_NAME'] = "database_name"
+
+# The table to read from.
+# The table needs to be in this form:
+# Field     Type        Collation     Attributes  Null    Default 	Extra
+# id        int(11)     -             -           No      None      AUTO_INCREMENT 	
+# content   text 	      utf8_general_ci         No      None      -
+# shown     tinyint(1)  -             -           No      None      -
+SETTINGS['DB_TABLE'] = "table_name"
