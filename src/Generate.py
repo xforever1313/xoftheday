@@ -23,16 +23,31 @@ class Generator():
         return self
 
     def GetRandomItem(self):
-        item = ""
+        item = None
 
         query = "SELECT * FROM " + self.settings['DB_TABLE'] + \
                 " WHERE shown=0 ORDER BY RAND() LIMIT 1"
 
         cursor = self.db.cursor()
         cursor.execute(query)
+
+        hasResult = False
+
         for (id, content, shown) in cursor:
+            hasResult = True
             item = content.replace("\\n", "\n")
             item = '\002' + item + '\003'
+
+            query = "UPDATE " + self.settings['DB_TABLE'] + \
+                    " SET shown=1" + \
+                    " WHERE id=" + str(id)
+
+            updateCursor = self.db.cursor()
+            updateCursor.execute(query)
+            updateCursor.close()
+
+        self.db.commit()
+        cursor.close()
 
         return item
 
@@ -42,9 +57,21 @@ class Generator():
                  "VALUES (NULL, %s, 0)")
         cursor = self.db.cursor()
         cursor.execute(query, (text,))
-        self.db.commit()
 
-    def writeItemToFile(self, item,outFile):
+        self.db.commit()
+        cursor.close()
+
+    def RefreshShown(self):
+        query = "UPDATE " + self.settings['DB_TABLE'] + \
+                " set shown=0"
+
+        cursor = self.db.cursor()
+        cursor.execute(query)
+
+        self.db.commit()
+        cursor.close()
+
+    def WriteItemToFile(self, item,outFile):
         file = open(outFile, 'w')
         file.write(item)
         file.close()
@@ -60,5 +87,18 @@ if __name__ == "__main__":
 
     with Generator(SETTINGS) as generator:
         item = generator.GetRandomItem()
-        generator.writeItemToFile(item, args.outfile)
+
+        if (item == None):
+            print ("No items returned, resetting shown status...")
+            generator.RefreshShown()
+            print ("Trying to get new item...")
+            item = generator.GetRandomItem()
+
+        if (item == None):
+            print ("No items in database.")
+            exit(0)
+
+        generator.WriteItemToFile(item, args.outfile)
+
+        print ("Done!")
 
