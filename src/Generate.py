@@ -6,13 +6,11 @@ http://www.boost.org/LICENSE_1_0.txt)
 '''
 import argparse
 from mysql.connector import (connection)
-import os
 
 from Configure import *
 
 class Generator():
-    def __init__(self, outFile, settings):
-        self.outFile = outFile
+    def __init__(self, settings):
         self.settings = settings
         self.db = connection.MySQLConnection(
             user = self.settings['DB_USERNAME'],
@@ -20,7 +18,6 @@ class Generator():
             host = self.settings['DB_URL'],
             database = self.settings['DB_NAME']
         )
-        self.curser = None
 
     def __enter__(self):
         return self
@@ -29,7 +26,7 @@ class Generator():
         item = ""
 
         query = "SELECT * FROM " + self.settings['DB_TABLE'] + \
-            " WHERE shown=0 ORDER BY RAND() LIMIT 1"
+                " WHERE shown=0 ORDER BY RAND() LIMIT 1"
 
         cursor = self.db.cursor()
         cursor.execute(query)
@@ -39,24 +36,29 @@ class Generator():
 
         return item
 
-    def writeItem(self, item):
-        file = open(self.outFile, 'w')
+    def InsertIntoDatabase(self, text):
+        query = ("INSERT INTO " + self.settings['DB_TABLE'] + \
+                 " (id, content, shown) " + \
+                 "VALUES (NULL, %s, 0)")
+        cursor = self.db.cursor()
+        cursor.execute(query, (text,))
+        self.db.commit()
+
+    def writeItemToFile(self, item,outFile):
+        file = open(outFile, 'w')
         file.write(item)
         file.close()
 
     def __exit__(self, type, value, traceback):
-        if ( self.curser != None ):
-            self.curser.close()
-
         if ( self.db != None ):
             self.db.close()
 
 if __name__ == "__main__":
     argParser = argparse.ArgumentParser( description="Reads a random something from the database and writes it to the given file." )
-    argParser.add_argument("outfile", action = "store", default="index.txt", help="The file to export to.")
+    argParser.add_argument("outfile", action = "store", default="index.html", help="The file to export to.")
     args = argParser.parse_args()
 
-    with Generator(args.outfile, SETTINGS) as generator:
+    with Generator(SETTINGS) as generator:
         item = generator.GetRandomItem()
-        generator.writeItem(item)
+        generator.writeItemToFile(item, args.outfile)
 
