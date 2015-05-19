@@ -3,6 +3,10 @@ X of the Day
 
 X of the day is a simple way to write to a file something of the day.  This can be a quote of the day, a joke of the day, or whatever else you can think of.
 
+Example Joke of the Day
+==
+[http://api.shendrick.net/jokeoftheday/][http://api.shendrick.net/jokeoftheday/]
+
 Dependencies
 ====
 * Python
