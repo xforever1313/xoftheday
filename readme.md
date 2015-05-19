@@ -5,7 +5,7 @@ X of the day is a simple way to write to a file something of the day.  This can 
 
 Example Joke of the Day
 ==
-[http://api.shendrick.net/jokeoftheday/] [http://api.shendrick.net/jokeoftheday/]
+[http://api.shendrick.net/jokeoftheday/](http://api.shendrick.net/jokeoftheday/)
 
 Dependencies
 ====
